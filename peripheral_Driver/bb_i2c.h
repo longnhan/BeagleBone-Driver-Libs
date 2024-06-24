@@ -24,13 +24,13 @@ typedef struct i2c_st
 {
     int i2c_fd;
     char *i2c_char;
-    int slave_addr;
+    uint8_t slave_addr;
 };
 
 
-extern void bb_i2cInit(struct i2c_st *ptr);
-extern void bb_i2cClose(struct i2c_st *ptr);
-extern uint8_t bb_getI2cData(struct i2c_st *ptr, uint8_t regAddress, uint8_t *buf, uint8_t size);
-extern uint8_t bb_sendI2cData(struct i2c_st *ptr, uint8_t regAddress, uint8_t cmd);
+void bb_i2cInit(struct i2c_st *ptr);
+void bb_i2cClose(struct i2c_st *ptr);
+uint8_t bb_getI2cData(struct i2c_st *ptr, uint8_t regAddress, uint8_t *buf, uint8_t size);
+uint8_t bb_sendI2cData(struct i2c_st *ptr, uint8_t regAddress, uint8_t cmd);
 
 #endif /*_BB_I2C_H_*/

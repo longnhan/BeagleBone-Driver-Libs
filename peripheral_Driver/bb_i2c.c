@@ -3,13 +3,13 @@
 void bb_i2cInit(struct i2c_st *ptr)
 {
     /*Open the I2C bus*/
-    if ((ptr->i2c_fd = open(ptr->i2c_char, O_RDWR)) < 0) 
+    if((ptr->i2c_fd = open(ptr->i2c_char, O_RDWR)) < 0) 
     {
         fprintf(stderr, "Failed to open the bus\n");
         exit(EXIT_FAILURE);
     }
     /*Set the I2C slave address*/
-    if (ioctl(ptr->i2c_fd, I2C_SLAVE, ptr->slave_addr) < 0) 
+    if(ioctl(ptr->i2c_fd, I2C_SLAVE, ptr->slave_addr) < 0) 
     {
         fprintf(stderr, "Failed to acquire bus access and/or talk to slave\n");
         exit(EXIT_FAILURE);

@@ -19,7 +19,7 @@ case $MY_OPTION in
     echo ::::----------------------------::::
     echo -e "\n"
     cd ..
-    scp -r $PRJ_PATH/build/ $BBGW_SSH:~/l3g4_prj
+    scp -r $PRJ_PATH/build/ $BBGW_SSH:~/test-Driver
     ;;
   2)
     echo ::::----------------------------::::
