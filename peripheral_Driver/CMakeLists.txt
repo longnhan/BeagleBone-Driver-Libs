@@ -4,6 +4,8 @@
 set(BEAGLEBONE_DRIVER_FILES
     bb_i2c.c
     bb_i2c.h
+    bb_gpio.c
+    bb_gpio.h
 )
 
 # Create a library from these files
