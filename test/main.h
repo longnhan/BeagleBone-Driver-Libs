@@ -10,6 +10,9 @@
 #include <fcntl.h>
 
 #include "bb_i2c.h"
+#include "bb_gpio.h"
+
+#define GPIO_TEST
 
 
 #endif /*__MAIN_H__*/
