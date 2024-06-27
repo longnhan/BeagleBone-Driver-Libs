@@ -38,11 +38,16 @@ typedef struct
 }gpio_st;
 
 
-void bb_gpio_init(gpio_st *ptr, char *pin, int direction);
-void bb_set_gpio_path(gpio_st *ptr, char *pin);
-void bb_gpio_write();
+/*Public function*/
 void bb_gpio_read();
-void bb_gpio_unexport(char *pin);
-void bb_gpio_close(gpio_st *ptr, char *pin);
+void bb_gpio_write();
+void bb_gpio_set_direction(gpio_st *ptr, const char *direction);
+void bb_gpio_close(gpio_st *ptr, const char *pin);
+void bb_gpio_open(gpio_st *ptr, const char *pin, const char *direction);
+
+/*Local function*/
+void bb_gpio_export(const char *pin);
+void bb_gpio_unexport(const char *pin);
+void bb_set_gpio_path(gpio_st *ptr, const char *pin);
 
 #endif /*_BB_GPIO_H_*/

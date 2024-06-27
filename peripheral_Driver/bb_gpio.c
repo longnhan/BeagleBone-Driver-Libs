@@ -1,37 +1,34 @@
 #include "bb_gpio.h"
 
-void bb_gpio_init(gpio_st *ptr, char *pin, int direction)
+void bb_gpio_open(gpio_st *ptr, const char *pin, const char *direction)
 {
+    /*-----------------------------------------------------*/
     /*first setup for this pin*/
+    /*-----------------------------------------------------*/
     bb_set_gpio_path(ptr, pin);
+    
+    /*-----------------------------------------------------*/
     /*export gpio*/
-    int gpio_fd = open(GPIO_EXPORT, O_WRONLY);
-    if (gpio_fd == -1)
-    {
-        fprintf(stderr, "Unable to open file\n");
-        exit(EXIT_FAILURE);
-    }
-    /*create gpio direcotry*/
-    if(write(gpio_fd, pin, strlrn(pin)) == -1)
-    {
-        fprintf(stderr, "Error to write to file\n");
-        close(gpio_fd);
-        exit(EXIT_FAILURE);
-    }
+    /*-----------------------------------------------------*/
+    bb_gpio_export(pin);
+    
+    /*-----------------------------------------------------*/
     /*set pin direction*/
-    if(write(gpio_fd, GPIO_PIN_10, sizeof(GPIO_PIN_10)) == -1)
-    {
-        fprintf(stderr, "Error to write to file\n");
-        close(gpio_fd);
-        exit(EXIT_FAILURE);
-    }
+    /*-----------------------------------------------------*/
+    bb_gpio_set_direction(ptr, direction);
+    
     /*set default state*/
+    /*-----------------------------------------------------*/
+    /*End*/
+    /*-----------------------------------------------------*/
 }
 
-void bb_set_gpio_path(gpio_st *ptr, char *pin)
+void bb_set_gpio_path(gpio_st *ptr, const char *pin)
 {
+    /*-----------------------------------------------------*/
     /*set direction path*/
-    size_t dir_path_len = strlen(GPIO_PATH) 
+    /*-----------------------------------------------------*/
+    size_t dir_path_len = strlen(GPIO_PATH)
                             + strlen(pin) 
                             + strlen("/") 
                             + strlen("direction") + 1;
@@ -43,6 +40,25 @@ void bb_set_gpio_path(gpio_st *ptr, char *pin)
     }
     sprintf(ptr->fp_direction,"%s%s/direction",GPIO_PATH, pin);
     printf("direction path is: %s\n", ptr->fp_direction);
+
+    /*-----------------------------------------------------*/
+    /*set value path*/
+    /*-----------------------------------------------------*/
+    size_t val_path_len = strlen(GPIO_PATH) 
+                            + strlen(pin) 
+                            + strlen("/") 
+                            + strlen("value") + 1;
+    ptr->fp_value = (char *)malloc(val_path_len);
+    if(ptr->fp_value == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(1);
+    }
+    sprintf(ptr->fp_value,"%s%s/value",GPIO_PATH, pin);
+    printf("value path is: %s\n", ptr->fp_value);
+    /*-----------------------------------------------------*/
+    /*End*/
+    /*-----------------------------------------------------*/
 }
 
 void bb_gpio_write()
@@ -55,53 +71,89 @@ void bb_gpio_read()
 
 }
 
-void bb_gpio_unexport(char *pin)
+void bb_gpio_set_direction(gpio_st *ptr, const char *direction)
 {
-    int gpio_fd = open(GPIO_UNEXPORT, O_WRONLY);
-    if (gpio_fd == -1)
+    int direction_fd = open(ptr->fp_direction, O_WRONLY);
+    if (direction_fd == -1)
     {
-        fprintf(stderr, "Unable to open file\n");
+        fprintf(stderr, "Unable to open file direction\n");
         exit(EXIT_FAILURE);
     }
-    /*unexport gpio direcotry*/
-    if(write(gpio_fd, pin, strlrn(pin)) == -1)
+
+    if(write(direction_fd, direction, strlen(direction)) == -1)
     {
-        fprintf(stderr, "Error to write to file\n");
-        close(gpio_fd);
+        fprintf(stderr, "Error to write to direction\n");
         exit(EXIT_FAILURE);
     }
-    close(gpio_fd);
+    close(direction_fd);
 }
 
-void bb_gpio_close(gpio_st *ptr, char *pin)
+void bb_gpio_export(const char *pin)
 {
-    /*unexport gpio*/
-    bb_gpio_unexport(pin);
-    /*free fp_active_low heap*/
-    if(ptr->fp_active_low != NULL)
+    int export_fd = open(GPIO_EXPORT, O_WRONLY);
+    if (export_fd == -1)
     {
-        free(ptr->fp_active_low);
-        ptr->fp_active_low = NULL;
+        fprintf(stderr, "Unable to open file export\n");
+        exit(EXIT_FAILURE);
     }
+    if(write(export_fd, pin, strlen(pin)) == -1)
+    {
+        if(write(export_fd, pin, strlen(pin)) == -1)
+        {
+            fprintf(stderr, "Error to export\n");
+            exit(EXIT_FAILURE);
+        }
+    }
+    close(export_fd);
+}
+
+void bb_gpio_unexport(const char *pin)
+{
+    /*-----------------------------------------------------*/
+    /*Open unexport file*/
+    /*-----------------------------------------------------*/
+    int unexport_fd = open(GPIO_UNEXPORT, O_WRONLY);
+    if (unexport_fd == -1)
+    {
+        fprintf(stderr, "Unable to open file unexport\n");
+        exit(EXIT_FAILURE);
+    }
+
+    /*-----------------------------------------------------*/
+    /*unexport gpio direcotry*/
+    /*-----------------------------------------------------*/
+    if(write(unexport_fd, pin, strlen(pin)) == -1)
+    {
+        fprintf(stderr, "Error to unexport\n");
+        close(unexport_fd);
+        exit(EXIT_FAILURE);
+    }
+    close(unexport_fd);
+    
+    /*-----------------------------------------------------*/
+    /*End*/
+    /*-----------------------------------------------------*/
+}
+
+void bb_gpio_close(gpio_st *ptr, const char *pin)
+{
+    /*-----------------------------------------------------*/
+    /*unexport gpio*/
+    /*-----------------------------------------------------*/
+    bb_gpio_unexport(pin);
+    
+    /*-----------------------------------------------------*/
     /*free fp_direction heap*/
+    /*-----------------------------------------------------*/
     if(ptr->fp_direction != NULL)
     {
         free(ptr->fp_direction);
         ptr->fp_direction = NULL;
     }
-    /*free fp_edge heap*/
-    if(ptr->fp_edge != NULL)
-    {
-        free(ptr->fp_edge);
-        ptr->fp_edge = NULL;
-    }
-    /*free fp_label heap*/
-    if(ptr->fp_label != NULL)
-    {
-        free(ptr->fp_label);
-        ptr->fp_label = NULL;
-    }
+
+    /*-----------------------------------------------------*/
     /*free fp_value heap*/
+    /*-----------------------------------------------------*/
     if(ptr->fp_value != NULL)
     {
         free(ptr->fp_value);
