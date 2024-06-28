@@ -10,7 +10,7 @@ void bb_gpio_open(gpio_st *ptr, const char *pin, const char *direction)
     /*-----------------------------------------------------*/
     /*export gpio*/
     /*-----------------------------------------------------*/
-    bb_gpio_export(pin);
+    bb_gpio_export(ptr);
     
     /*-----------------------------------------------------*/
     /*set pin direction*/
@@ -25,6 +25,11 @@ void bb_gpio_open(gpio_st *ptr, const char *pin, const char *direction)
 
 void bb_set_gpio_path(gpio_st *ptr, const char *pin)
 {
+    /*-----------------------------------------------------*/
+    /*set gpio pin*/
+    /*-----------------------------------------------------*/
+    ptr->gpio_pin = pin;
+    
     /*-----------------------------------------------------*/
     /*set direction path*/
     /*-----------------------------------------------------*/
@@ -61,12 +66,25 @@ void bb_set_gpio_path(gpio_st *ptr, const char *pin)
     /*-----------------------------------------------------*/
 }
 
-void bb_gpio_write()
+void bb_gpio_write(gpio_st *ptr, char *state)
 {
+    int value_fd = open(ptr->fp_value, O_WRONLY);
+    if (value_fd == -1)
+    {
+        fprintf(stderr, "Unable to open file direction\n");
+        exit(EXIT_FAILURE);
+    }
 
+    if(write(value_fd, state, strlen(state)) == -1)
+    {
+        fprintf(stderr, "Error to write to direction\n");
+        exit(EXIT_FAILURE);
+    }
+    close(value_fd);
 }
 
-void bb_gpio_read()
+void bb_gpio_read(gpio_st *ptr)
+
 {
 
 }
@@ -88,7 +106,7 @@ void bb_gpio_set_direction(gpio_st *ptr, const char *direction)
     close(direction_fd);
 }
 
-void bb_gpio_export(const char *pin)
+void bb_gpio_export(gpio_st *ptr)
 {
     int export_fd = open(GPIO_EXPORT, O_WRONLY);
     if (export_fd == -1)
@@ -96,9 +114,9 @@ void bb_gpio_export(const char *pin)
         fprintf(stderr, "Unable to open file export\n");
         exit(EXIT_FAILURE);
     }
-    if(write(export_fd, pin, strlen(pin)) == -1)
+    if(write(export_fd, ptr->gpio_pin, strlen(ptr->gpio_pin)) == -1)
     {
-        if(write(export_fd, pin, strlen(pin)) == -1)
+        if(write(export_fd, ptr->gpio_pin, strlen(ptr->gpio_pin)) == -1)
         {
             fprintf(stderr, "Error to export\n");
             exit(EXIT_FAILURE);
@@ -107,7 +125,7 @@ void bb_gpio_export(const char *pin)
     close(export_fd);
 }
 
-void bb_gpio_unexport(const char *pin)
+void bb_gpio_unexport(gpio_st *ptr)
 {
     /*-----------------------------------------------------*/
     /*Open unexport file*/
@@ -122,7 +140,7 @@ void bb_gpio_unexport(const char *pin)
     /*-----------------------------------------------------*/
     /*unexport gpio direcotry*/
     /*-----------------------------------------------------*/
-    if(write(unexport_fd, pin, strlen(pin)) == -1)
+    if(write(unexport_fd, ptr->gpio_pin, strlen(ptr->gpio_pin)) == -1)
     {
         fprintf(stderr, "Error to unexport\n");
         close(unexport_fd);
@@ -140,7 +158,7 @@ void bb_gpio_close(gpio_st *ptr, const char *pin)
     /*-----------------------------------------------------*/
     /*unexport gpio*/
     /*-----------------------------------------------------*/
-    bb_gpio_unexport(pin);
+    bb_gpio_unexport(ptr);
     
     /*-----------------------------------------------------*/
     /*free fp_direction heap*/
