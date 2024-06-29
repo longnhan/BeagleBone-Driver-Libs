@@ -26,7 +26,20 @@
 
 #define BB_GPIO_PIN_10         "10"
 #define BB_GPIO_PIN_50         "50"
+#define BB_GPIO_PIN_53         "53"
+#define BB_GPIO_PIN_54         "54"
+#define BB_GPIO_PIN_55         "55"
+#define BB_GPIO_PIN_56         "56"
 #define BB_GPIO_PIN_60         "60"
+
+#define BB_GPIO_PIN_117         "117"
+
+#define BB_LED_D2               BB_GPIO_PIN_53
+#define BB_LED_D3               BB_GPIO_PIN_54
+#define BB_LED_D4               BB_GPIO_PIN_55
+#define BB_LED_D5               BB_GPIO_PIN_56
+
+#define BB_USR_BUTTON           BB_GPIO_PIN_117
 
 #endif /*BBGW_BOARD*/
 
@@ -43,6 +56,7 @@ typedef struct
 
 /*Public function*/
 uint8_t bb_gpio_read(gpio_st *ptr);
+void bb_gpio_toggle(gpio_st *ptr);
 void bb_gpio_write(gpio_st *ptr, char *state);
 void bb_gpio_close(gpio_st *ptr);
 void bb_gpio_open(gpio_st *ptr, const char *pin, const char *direction);

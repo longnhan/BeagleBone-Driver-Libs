@@ -2,6 +2,7 @@
 
 void bb_gpio_open(gpio_st *ptr, const char *pin, const char *direction)
 {
+    printf("Set gpio %s for pin %s\n", direction, pin);
     /*-----------------------------------------------------*/
     /*first setup for this pin*/
     /*-----------------------------------------------------*/
@@ -18,6 +19,15 @@ void bb_gpio_open(gpio_st *ptr, const char *pin, const char *direction)
     bb_gpio_set_direction(ptr, direction);
     
     /*set default state*/
+    if(strcmp(direction, BB_GPIO_OUTPUT) == 0)
+    {
+        printf("gpio output\n");
+        bb_gpio_write(ptr, BB_GPIO_RESET);
+    }
+    else
+    {
+        printf("gpio input\n");
+    }
     /*-----------------------------------------------------*/
     /*End*/
     /*-----------------------------------------------------*/
@@ -44,7 +54,7 @@ void bb_set_gpio_path(gpio_st *ptr, const char *pin)
         exit(1);
     }
     sprintf(ptr->fp_direction,"%s%s/direction", BB_GPIO_PATH, pin);
-    printf("direction path is: %s\n", ptr->fp_direction);
+    // printf("direction path is: %s\n", ptr->fp_direction);
 
     /*-----------------------------------------------------*/
     /*set value path*/
@@ -60,7 +70,7 @@ void bb_set_gpio_path(gpio_st *ptr, const char *pin)
         exit(1);
     }
     sprintf(ptr->fp_value,"%s%s/value", BB_GPIO_PATH, pin);
-    printf("value path is: %s\n", ptr->fp_value);
+    // printf("value path is: %s\n", ptr->fp_value);
     /*-----------------------------------------------------*/
     /*End*/
     /*-----------------------------------------------------*/
@@ -103,6 +113,26 @@ uint8_t bb_gpio_read(gpio_st *ptr)
     printf("value is %s\n", buf);
     ret = (uint8_t)atoi(buf);
     return ret;
+}
+
+void bb_gpio_toggle(gpio_st *ptr)
+{
+    if(ptr == NULL)
+    {
+        fprintf(stderr, "NULL\n");
+        exit(EXIT_FAILURE);
+    }
+    else
+    {
+        if(bb_gpio_read(ptr) == 0)
+        {
+            bb_gpio_write(ptr, BB_GPIO_SET);
+        }
+        else
+        {
+            bb_gpio_write(ptr, BB_GPIO_RESET);
+        }
+    }
 }
 
 void bb_gpio_set_direction(gpio_st *ptr, const char *direction)
