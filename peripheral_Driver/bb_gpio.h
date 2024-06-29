@@ -17,15 +17,16 @@
 #define BB_GPIO_SET         "1"
 #define BB_GPIO_RESET       "0"
 /*Define GPIO system files*/
-#define GPIO_PATH           "/sys/class/gpio/gpio"
-#define GPIO_EXPORT         "/sys/class/gpio/export"
-#define GPIO_UNEXPORT       "/sys/class/gpio/unexport"
+#define BB_GPIO_PATH           "/sys/class/gpio/gpio"
+#define BB_GPIO_EXPORT         "/sys/class/gpio/export"
+#define BB_GPIO_UNEXPORT       "/sys/class/gpio/unexport"
 /*Define direction*/
-#define GPIO_INPUT          "int"
-#define GPIO_OUTPUT         "out"
+#define BB_GPIO_INPUT          "in"
+#define BB_GPIO_OUTPUT         "out"
 
-#define GPIO_PIN_10         "10"
-#define GPIO_PIN_60         "60"
+#define BB_GPIO_PIN_10         "10"
+#define BB_GPIO_PIN_50         "50"
+#define BB_GPIO_PIN_60         "60"
 
 #endif /*BBGW_BOARD*/
 
@@ -41,9 +42,9 @@ typedef struct
 
 
 /*Public function*/
-void bb_gpio_read(gpio_st *ptr);
+uint8_t bb_gpio_read(gpio_st *ptr);
 void bb_gpio_write(gpio_st *ptr, char *state);
-void bb_gpio_close(gpio_st *ptr, const char *pin);
+void bb_gpio_close(gpio_st *ptr);
 void bb_gpio_open(gpio_st *ptr, const char *pin, const char *direction);
 
 /*Local function*/

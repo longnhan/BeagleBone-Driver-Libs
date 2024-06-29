@@ -33,7 +33,7 @@ void bb_set_gpio_path(gpio_st *ptr, const char *pin)
     /*-----------------------------------------------------*/
     /*set direction path*/
     /*-----------------------------------------------------*/
-    size_t dir_path_len = strlen(GPIO_PATH)
+    size_t dir_path_len = strlen(BB_GPIO_PATH)
                             + strlen(pin) 
                             + strlen("/") 
                             + strlen("direction") + 1;
@@ -43,13 +43,13 @@ void bb_set_gpio_path(gpio_st *ptr, const char *pin)
         fprintf(stderr, "Memory allocation failed\n");
         exit(1);
     }
-    sprintf(ptr->fp_direction,"%s%s/direction",GPIO_PATH, pin);
+    sprintf(ptr->fp_direction,"%s%s/direction", BB_GPIO_PATH, pin);
     printf("direction path is: %s\n", ptr->fp_direction);
 
     /*-----------------------------------------------------*/
     /*set value path*/
     /*-----------------------------------------------------*/
-    size_t val_path_len = strlen(GPIO_PATH) 
+    size_t val_path_len = strlen(BB_GPIO_PATH) 
                             + strlen(pin) 
                             + strlen("/") 
                             + strlen("value") + 1;
@@ -59,7 +59,7 @@ void bb_set_gpio_path(gpio_st *ptr, const char *pin)
         fprintf(stderr, "Memory allocation failed\n");
         exit(1);
     }
-    sprintf(ptr->fp_value,"%s%s/value",GPIO_PATH, pin);
+    sprintf(ptr->fp_value,"%s%s/value", BB_GPIO_PATH, pin);
     printf("value path is: %s\n", ptr->fp_value);
     /*-----------------------------------------------------*/
     /*End*/
@@ -83,10 +83,26 @@ void bb_gpio_write(gpio_st *ptr, char *state)
     close(value_fd);
 }
 
-void bb_gpio_read(gpio_st *ptr)
-
+uint8_t bb_gpio_read(gpio_st *ptr)
 {
+    uint8_t ret = 0;
+    char buf[3] = {0};
+    int value_fd = open(ptr->fp_value, O_RDONLY);
+    if (value_fd == -1)
+    {
+        fprintf(stderr, "Unable to open file direction\n");
+        exit(EXIT_FAILURE);
+    }
 
+    if(read(value_fd, buf, sizeof(buf)-1) == -1)
+    {
+        fprintf(stderr, "Error to read to value\n");
+        exit(EXIT_FAILURE);
+    }
+    close(value_fd);
+    printf("value is %s\n", buf);
+    ret = (uint8_t)atoi(buf);
+    return ret;
 }
 
 void bb_gpio_set_direction(gpio_st *ptr, const char *direction)
@@ -108,7 +124,7 @@ void bb_gpio_set_direction(gpio_st *ptr, const char *direction)
 
 void bb_gpio_export(gpio_st *ptr)
 {
-    int export_fd = open(GPIO_EXPORT, O_WRONLY);
+    int export_fd = open(BB_GPIO_EXPORT, O_WRONLY);
     if (export_fd == -1)
     {
         fprintf(stderr, "Unable to open file export\n");
@@ -130,7 +146,7 @@ void bb_gpio_unexport(gpio_st *ptr)
     /*-----------------------------------------------------*/
     /*Open unexport file*/
     /*-----------------------------------------------------*/
-    int unexport_fd = open(GPIO_UNEXPORT, O_WRONLY);
+    int unexport_fd = open(BB_GPIO_UNEXPORT, O_WRONLY);
     if (unexport_fd == -1)
     {
         fprintf(stderr, "Unable to open file unexport\n");
@@ -153,7 +169,7 @@ void bb_gpio_unexport(gpio_st *ptr)
     /*-----------------------------------------------------*/
 }
 
-void bb_gpio_close(gpio_st *ptr, const char *pin)
+void bb_gpio_close(gpio_st *ptr)
 {
     /*-----------------------------------------------------*/
     /*unexport gpio*/
